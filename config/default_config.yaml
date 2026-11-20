@@ -1,0 +1,101 @@
+# Default Configuration for Cloud Resource Allocation Simulation
+# Courses: AI310 & CS361 (Fall 2026-2027)
+
+project:
+  name: "Cloud Resource Allocation Using GA and MA"
+  random_seed: 42
+  scheduling_mode: "static"          # "static" | "dynamic"
+  capacity_mode: "cumulative"        # "cumulative" (batch quota sum <= VM cap) | "per_task_sequential"
+
+environment:
+  num_tasks: 100
+  num_vms: 10
+  workload_distribution: "mixed"     # "uniform" | "normal" | "exponential" | "mixed"
+  target_load_factor: 0.75           # Calibrated CPU/RAM pressure in cumulative mode
+  dynamic_arrival_rate: 2.5          # Tasks per second (used when scheduling_mode == "dynamic")
+  deadline_slack_factor: 1.45        # Multiplier for task SLA deadline realism
+  unavailable_vm_ratio: 0.0          # Fraction of VMs initially unavailable (0.0 to 0.5)
+
+optimization:
+  profile: "balanced"                # "balanced" | "performance" | "cost"
+  weights:
+    balanced:
+      makespan: 0.25
+      cost: 0.20
+      response_time: 0.20
+      load_imbalance: 0.15
+      sla_violations: 0.20
+    performance:
+      makespan: 0.35
+      cost: 0.05
+      response_time: 0.30
+      load_imbalance: 0.10
+      sla_violations: 0.20
+    cost:
+      makespan: 0.10
+      cost: 0.55
+      response_time: 0.10
+      load_imbalance: 0.10
+      sla_violations: 0.15
+  infeasibility_penalty_base: 1000.0
+  infeasibility_penalty_scale: 500.0
+
+genetic_algorithm:
+  population_size: 50
+  generations: 60
+  crossover_rate: 0.85
+  mutation_rate: 0.04                # Per-gene probability (or adaptive)
+  elitism_count: 2
+  selection_method: "tournament"     # "tournament" | "roulette"
+  tournament_size: 3
+  crossover_method: "uniform"        # "single_point" | "uniform"
+  mutation_method: "feasibility_aware"  # "random_reset" | "feasibility_aware"
+  repair_infeasible: true
+  adaptive_diversity: true
+  stagnation_limit: 15
+  early_stopping_patience: null
+
+memetic_algorithm:
+  population_size: 50
+  generations: 60
+  crossover_rate: 0.85
+  mutation_rate: 0.04
+  elitism_count: 2
+  selection_method: "tournament"
+  tournament_size: 3
+  crossover_method: "uniform"
+  mutation_method: "feasibility_aware"
+  repair_infeasible: true
+  adaptive_diversity: true
+  stagnation_limit: 15
+  early_stopping_patience: null
+  # Local search parameters
+  ls_strategy: "first_improvement"   # "first_improvement" | "best_improvement" | "none"
+  ls_probability: 0.50
+  ls_frequency: 1                    # Apply every k generations
+  ls_selection_scope: "top_k"        # "top_k" | "offspring" | "elite"
+  ls_top_k: 4
+  ls_max_iterations: 10
+  ls_max_evals: 50                   # Hard evaluation budget per LS invocation
+  ls_operators:
+    - "relocate"
+    - "swap"
+    - "rebalance"
+
+nsga2:
+  population_size: 60
+  generations: 80
+  crossover_rate: 0.85
+  mutation_rate: 0.04
+  objectives:
+    - "makespan"
+    - "total_cost"
+    - "avg_response_time"
+
+output:
+  results_dir: "results"
+  figures_dir: "results/figures"
+  tables_dir: "results/tables"
+  raw_dir: "results/raw"
+  processed_dir: "results/processed"
+  save_convergence_histories: true

@@ -1,0 +1,96 @@
+# Comprehensive Experimental Configuration
+# Defines multi-seed benchmark matrices for comparative, scalability,
+# robustness, ablation, and hyperparameter tuning evaluations.
+
+comparative_benchmark:
+  num_seeds: 20
+  base_seed: 100
+  task_count: 100
+  vm_count: 10
+  distributions:
+    - "uniform"
+    - "normal"
+    - "exponential"
+    - "mixed"
+  weight_profiles:
+    - "balanced"
+    - "performance"
+    - "cost"
+
+scalability_matrix:
+  num_seeds: 5
+  base_seed: 200
+  task_counts: [50, 100, 500, 1000]
+  vm_counts: [5, 10, 20, 50]
+  distribution: "mixed"
+  target_load_factor: 0.72
+  ga_generations: 50
+  ma_generations: 50
+  population_size: 40
+  ma_ls_top_k: 4
+  ma_ls_max_evals: 50
+
+robustness_scenarios:
+  num_seeds: 15
+  base_seed: 300
+  task_count: 100
+  vm_count: 10
+  scenarios:
+    - name: "baseline_load"
+      load_factor: 0.70
+      cpu_bias: 1.0
+      ram_bias: 1.0
+      unavailable_ratio: 0.0
+    - name: "resource_scarcity"
+      load_factor: 0.92
+      cpu_bias: 1.0
+      ram_bias: 1.0
+      unavailable_ratio: 0.0
+    - name: "high_cpu_demand"
+      load_factor: 0.85
+      cpu_bias: 1.65
+      ram_bias: 0.65
+      unavailable_ratio: 0.0
+    - name: "high_ram_demand"
+      load_factor: 0.85
+      cpu_bias: 0.65
+      ram_bias: 1.65
+      unavailable_ratio: 0.0
+    - name: "vm_failure_degraded"
+      load_factor: 0.75
+      cpu_bias: 1.0
+      ram_bias: 1.0
+      unavailable_ratio: 0.20
+    - name: "dynamic_arrivals"
+      load_factor: 0.75
+      cpu_bias: 1.0
+      ram_bias: 1.0
+      unavailable_ratio: 0.0
+      scheduling_mode: "dynamic"
+
+ablation_study:
+  num_seeds: 15
+  base_seed: 400
+  task_count: 100
+  vm_count: 10
+  variants:
+    - "ga_no_elitism"
+    - "ga_with_elitism"
+    - "ga_roulette_single_point"
+    - "ma_no_local_search"
+    - "ma_first_improvement"
+    - "ma_best_improvement"
+
+hyperparameter_tuning:
+  num_seeds: 5
+  base_seed: 500
+  task_count: 100
+  vm_count: 10
+  ga_grid:
+    population_size: [30, 60, 100]
+    crossover_rate: [0.70, 0.85, 0.95]
+    mutation_rate: [0.01, 0.04, 0.08]
+  ma_grid:
+    ls_probability: [0.20, 0.45, 0.80]
+    ls_max_iterations: [5, 15, 25]
+    ls_strategy: ["first_improvement", "best_improvement"]
